@@ -1,83 +1,76 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const express = require('express');
+const Car = require('./models/car.js');
+
 const app = express();
 
 app.use(express.json());
 
-cars = [
-  {
-    id: 1,
-    name: "Toyota Corolla",
-    price: "$ 20000",
-    available_quantity: 5
-  },
-  {
-    id: 2,
-    name: "Toyota Fortuner",
-    price: "$ 30000",
-    available_quantity: 3
-  }
-];
-
 // Connect to Mongo DB
-mongoose.connect(
-  "mongodb://localhost:27017"
-  )       
-.then(() => {
-console.log("Connected to Database");
-})
-.catch((error) => {
-console.log("Connection failed!");
-});
+mongoose
+    .connect('mongodb://localhost:27017')
+    .then(() => {
+        console.log('Connected to Database');
+    })
+    .catch((error) => {
+        console.log('Connection failed!');
+    });
 
-app.get('/' , (req, res) => {
- res.send('Car Showroom Project!');
+app.get('/', (req, res) => {
+    res.send('Car Showroom Project!');
 });
 
 // GET cars
-app.get('/cars' , (req, res) => {
- res.send(cars);
+app.get('/cars', (req, res) => {
+    Car.find().then((cars) => {
+        return res.send(cars);
+    });
 });
 
 // POST cars
-app.post('/cars' , (req, res) => {
-  const car = {
-    id: cars.length + 1,
-    name: req.body.name,
-    price: req.body.price,
-    available_quantity: req.body.available_quantity,
-  };
+app.post('/cars', (req, res) => {
+    const car = new Car({
+        name: req.body.name,
+        price: req.body.price,
+        available_quantity: req.body.available_quantity,
+    });
+    car.save();
 
-  cars.push(car);
-  res.send(car);
+    res.send(car);
 });
 
 // PUT cars
-app.put('/cars' , (req, res) => {
-  const car = cars.find(c => c.id === parseInt(req.body.id));
+app.put('/cars', (req, res) => {
 
-  if(!car) return res.status(404).send('car not found!');
-
-  car.name = req.body.name;
-  car.price = req.body.price;
-  car.available_quantity = req.body.available_quantity;
-  res.send(car);
+    Car.findOneAndUpdate({
+        _id: req.body._id
+    },
+    {
+		name: req.body.name,
+		price: req.body.price,
+		available_quantity: req.body.available_quantity
+    },
+        function (error, result) {
+			if (error) return res.status(404).send(error);
+			else return res.send(result);
+        }
+    );
 });
 
 // DELETE cars
-app.delete('/cars' , (req, res) => {
-  const car = cars.find(c => c.id === parseInt(req.body.id));
-
-  if(!car) return  res.status(404).send('car not found!');
-
-  const index = cars.indexOf(car);
-  cars.splice(index, 1);
-
-  res.send(car);
+app.delete('/cars', (req, res) => {
+    Car.findOneAndDelete({
+        _id: req.body._id
+    },
+		function (error, result) {
+			if (error) return res.status(404).send(error);
+			else return res.send(result);
+		}
+    );
 });
 
 const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
- console.log(`Express app Listening on Port ${port}`);
+    console.log(`Express app Listening on Port ${port}`);
 });
