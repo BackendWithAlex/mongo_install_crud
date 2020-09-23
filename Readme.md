@@ -1,9 +1,11 @@
-# Backend With Alex
+# [Backend With Alex](https://www.backendwithalex.com/)
 a backend exclusive blog
+
+Check it out 👉 (https://www.backendwithalex.com/)
 
 ## Mongo Installation + CRUD operations
 
-This repositiry contains code for the Blog Post titled 'How to install & connect to MongoDB in a Node JS + express Backend Application?'.
+This repositiry contains code for the Blog Post titled ['How to perform CRUD operations on Mongo DB in a Node JS + express Backend Application?'](https://www.backendwithalex.com/blog/mongo-crud).
 
 ### Run in local server
 
